@@ -11,3 +11,9 @@ config BRICKED_HOTPLUG
 	   default y
 	   help
 		 This enables kernel based multi core control.
+
+config INTELLI_PLUG
+	    bool "Enable intelli-plug cpu hotplug driver"
+	    default n
+	    help
+	         Generic Intelli-plug cpu hotplug driver for ARM SOCs
