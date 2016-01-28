@@ -55,7 +55,6 @@ static void adreno_pwr_on_work(struct work_struct *work);
 #define SECVID_PROGRAM_PATH_CPU		0x2
 
 static void adreno_pwr_on_work(struct work_struct *work);
->>>>>>> f78d66a7273... msm: kgsl: Wake GPU upon receiving an ioctl rather than upon touch input
 
 static struct devfreq_msm_adreno_tz_data adreno_tz_data = {
 	.bus = {
