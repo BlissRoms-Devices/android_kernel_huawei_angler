@@ -24,7 +24,6 @@
 #include <asm/cacheflush.h>
 #include <soc/qcom/scm.h>
 #include "governor.h"
-#include <linux/moduleparam.h>
 
 static DEFINE_SPINLOCK(tz_lock);
 static DEFINE_SPINLOCK(sample_lock);
@@ -326,6 +325,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 	int val, level = 0;
 	unsigned int scm_data[3];
 	static int busy_bin, frame_flag;
+
 	/* keeps stats.private_data == NULL   */
 	result = devfreq->profile->get_dev_status(devfreq->dev.parent, &stats);
 	if (result) {
@@ -343,6 +343,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 		*freq = devfreq->profile->freq_table[devfreq->profile->max_state - 1];
 		return 0;
 	}
+
 	priv->bin.total_time += stats.total_time;
 	// AP: priv->bin.busy_time += stats.busy_time;
 
@@ -356,6 +357,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 #else
 	priv->bin.busy_time += stats.busy_time;
 #endif
+
 	/* Update the GPU load statistics */
 	compute_work_load(&stats, priv, devfreq);
 	/*
@@ -369,6 +371,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 		(unsigned int) priv->bin.busy_time < MIN_BUSY) {
 		return 0;
 	}
+
 	if ((stats.busy_time * 100 / stats.total_time) > BUSY_BIN) {
 		busy_bin += stats.busy_time;
 		if (stats.total_time > LONG_FRAME)
@@ -377,11 +380,13 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 		busy_bin = 0;
 		frame_flag = 0;
 	}
+
 	level = devfreq_get_freq_level(devfreq, stats.current_frequency);
 	if (level < 0) {
 		pr_err(TAG "bad freq %ld\n", stats.current_frequency);
 		return level;
 	}
+
 	/*
 	 * If there is an extended block of busy processing,
 	 * increase frequency.  Otherwise run the normal algorithm.
@@ -392,6 +397,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 		busy_bin = 0;
 		frame_flag = 0;
 	} else {
+
 		scm_data[0] = level;
 		scm_data[1] = priv->bin.total_time;
 		scm_data[2] = priv->bin.busy_time;
@@ -424,6 +430,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 		level = max(level, 0);
 		level = min_t(int, level, devfreq->profile->max_state - 1);
 	}
+
 	*freq = devfreq->profile->freq_table[level];
 	return 0;
 }
