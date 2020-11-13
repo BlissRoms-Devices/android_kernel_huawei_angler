@@ -1416,16 +1416,20 @@ static int wait_consider_task(struct wait_opts *wo, int ptrace,
 
 	/* slay zombie? */
 	if (p->exit_state == EXIT_ZOMBIE) {
-		/* we don't reap group leaders with subthreads */
-		if (!delay_group_leader(p)) {
-			/*
-			 * A zombie ptracee is only visible to its ptracer.
-			 * Notification and reaping will be cascaded to the
-			 * real parent when the ptracer detaches.
-			 */
-			if (unlikely(ptrace) || likely(!p->ptrace))
-				return wait_task_zombie(wo, p);
+		/*
+		 * A zombie ptracee is only visible to its ptracer.
+		 * Notification and reaping will be cascaded to the real
+		 * parent when the ptracer detaches.
+		 */
+		if (likely(!ptrace) && unlikely(p->ptrace)) {
+			/* it will become visible, clear notask_error */
+			wo->notask_error = 0;
+			return 0;
 		}
+
+		/* we don't reap group leaders with subthreads */
+		if (!delay_group_leader(p))
+			return wait_task_zombie(wo, p);
 
 		/*
 		 * Allow access to stopped/continued state via zombie by
