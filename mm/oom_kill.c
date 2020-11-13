@@ -325,14 +325,10 @@ static struct task_struct *select_bad_process(unsigned int *ppoints,
 			break;
 		};
 		points = oom_badness(p, NULL, nodemask, totalpages);
-		if (!points || points < chosen_points)
-			continue;
-		/* Prefer thread group leaders for display purposes */
-		if (points == chosen_points && thread_group_leader(chosen))
-			continue;
-
-		chosen = p;
-		chosen_points = points;
+		if (points > chosen_points) {
+			chosen = p;
+			chosen_points = points;
+		}
 	}
 	if (chosen)
 		get_task_struct(chosen);
