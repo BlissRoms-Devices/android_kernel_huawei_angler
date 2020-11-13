@@ -2948,7 +2948,7 @@ static inline void inc_syscfs(struct task_struct *tsk)
 #define TASK_SIZE_OF(tsk)	TASK_SIZE
 #endif
 
-#ifdef CONFIG_MEMCG
+#ifdef CONFIG_MM_OWNER
 extern void mm_update_next_owner(struct mm_struct *mm);
 extern void mm_init_owner(struct mm_struct *mm, struct task_struct *p);
 #else
@@ -2959,7 +2959,7 @@ static inline void mm_update_next_owner(struct mm_struct *mm)
 static inline void mm_init_owner(struct mm_struct *mm, struct task_struct *p)
 {
 }
-#endif /* CONFIG_MEMCG */
+#endif /* CONFIG_MM_OWNER */
 
 static inline unsigned long task_rlimit(const struct task_struct *tsk,
 		unsigned int limit)
