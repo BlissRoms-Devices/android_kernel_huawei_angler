@@ -550,7 +550,7 @@ static void reparent_leader(struct task_struct *father, struct task_struct *p,
 	    p->exit_state == EXIT_ZOMBIE && thread_group_empty(p)) {
 		if (do_notify_parent(p, p->exit_signal)) {
 			p->exit_state = EXIT_DEAD;
-			list_add(&p->ptrace_entry, dead);
+			list_move_tail(&p->sibling, dead);
 		}
 	}
 
@@ -589,8 +589,8 @@ static void forget_original_parent(struct task_struct *father)
 
 	BUG_ON(!list_empty(&father->children));
 
-	list_for_each_entry_safe(p, n, &dead_children, ptrace_entry) {
-		list_del_init(&p->ptrace_entry);
+	list_for_each_entry_safe(p, n, &dead_children, sibling) {
+		list_del_init(&p->sibling);
 		release_task(p);
 	}
 }
