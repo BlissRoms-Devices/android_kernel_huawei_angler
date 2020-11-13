@@ -170,12 +170,7 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 			     free);
 
 		lowmem_deathpending_timeout = jiffies + HZ;
-		/*
-		 * FIXME: lowmemorykiller shouldn't abuse global OOM killer
-		 * infrastructure. There is no real reason why the selected
-		 * task should have access to the memory reserves.
-		 */
-		mark_tsk_oom_victim(selected);
+		set_tsk_thread_flag(selected, TIF_MEMDIE);
 		send_sig(SIGKILL, selected, 0);
 		rem -= selected_tasksize;
 	}
