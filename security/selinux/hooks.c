@@ -1560,7 +1560,8 @@ static int task_has_system(struct task_struct *tsk,
 static int inode_has_perm(const struct cred *cred,
 			  struct inode *inode,
 			  u32 perms,
-			  struct common_audit_data *adp)
+			  struct common_audit_data *adp,
+			  unsigned flags)
 {
 	struct inode_security_struct *isec;
 	u32 sid;
@@ -1573,7 +1574,7 @@ static int inode_has_perm(const struct cred *cred,
 	sid = cred_sid(cred);
 	isec = inode->i_security;
 
-	return avc_has_perm(sid, isec->sid, isec->sclass, perms, adp);
+	return avc_has_perm_flags(sid, isec->sid, isec->sclass, perms, adp, flags);
 }
 
 /* Same as inode_has_perm, but pass explicit audit data containing
@@ -1588,7 +1589,7 @@ static inline int dentry_has_perm(const struct cred *cred,
 
 	ad.type = LSM_AUDIT_DATA_DENTRY;
 	ad.u.dentry = dentry;
-	return inode_has_perm(cred, inode, av, &ad);
+	return inode_has_perm(cred, inode, av, &ad, 0);
 }
 
 /* Same as inode_has_perm, but pass explicit audit data containing
@@ -1603,7 +1604,7 @@ static inline int path_has_perm(const struct cred *cred,
 
 	ad.type = LSM_AUDIT_DATA_PATH;
 	ad.u.path = *path;
-	return inode_has_perm(cred, inode, av, &ad);
+	return inode_has_perm(cred, inode, av, &ad, 0);
 }
 
 /* Same as path_has_perm, but uses the inode from the file struct. */
@@ -1615,7 +1616,7 @@ static inline int file_path_has_perm(const struct cred *cred,
 
 	ad.type = LSM_AUDIT_DATA_PATH;
 	ad.u.path = file->f_path;
-	return inode_has_perm(cred, file_inode(file), av, &ad);
+	return inode_has_perm(cred, file_inode(file), av, &ad, 0);
 }
 
 /* Check whether a task can use an open file descriptor to
@@ -1651,7 +1652,7 @@ static int file_has_perm(const struct cred *cred,
 	/* av is zero if only checking access to the descriptor. */
 	rc = 0;
 	if (av)
-		rc = inode_has_perm(cred, inode, av, &ad);
+		rc = inode_has_perm(cred, inode, av, &ad, 0);
 
 out:
 	return rc;
