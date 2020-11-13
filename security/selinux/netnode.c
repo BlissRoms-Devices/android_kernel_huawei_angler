@@ -302,6 +302,7 @@ void sel_netnode_flush(void)
 static __init int sel_netnode_init(void)
 {
 	int iter;
+	int ret;
 
 	if (!selinux_enabled)
 		return 0;
@@ -311,7 +312,7 @@ static __init int sel_netnode_init(void)
 		sel_netnode_hash[iter].size = 0;
 	}
 
-	return 0;
+	return ret;
 }
 
 __initcall(sel_netnode_init);
