@@ -771,7 +771,9 @@ static int usb_get_langid(struct usb_device *dev, unsigned char *tbuf)
 		dev->string_langid = 0x0409;
 		dev->have_langid = 1;
 		dev_err(&dev->dev,
-			"language id specifier not provided by device, defaulting to English\n");
+			"string descriptor 0 malformed (err = %d), "
+			"defaulting to 0x%04x\n",
+				err, dev->string_langid);
 		return 0;
 	}
 
