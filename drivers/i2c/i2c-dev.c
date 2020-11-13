@@ -495,8 +495,13 @@ static int i2cdev_open(struct inode *inode, struct file *file)
 	unsigned int minor = iminor(inode);
 	struct i2c_client *client;
 	struct i2c_adapter *adap;
+	struct i2c_dev *i2c_dev;
 
-	adap = i2c_get_adapter(minor);
+	i2c_dev = i2c_dev_get_by_minor(minor);
+	if (!i2c_dev)
+		return -ENODEV;
+
+	adap = i2c_get_adapter(i2c_dev->adap->nr);
 	if (!adap)
 		return -ENODEV;
 
