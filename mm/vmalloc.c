@@ -2738,19 +2738,19 @@ static int s_show(struct seq_file *m, void *p)
 		seq_printf(m, " phys=%llx", (unsigned long long)v->phys_addr);
 
 	if (v->flags & VM_IOREMAP)
-		seq_puts(m, " ioremap");
+		seq_printf(m, " ioremap");
 
 	if (v->flags & VM_ALLOC)
-		seq_puts(m, " vmalloc");
+		seq_printf(m, " vmalloc");
 
 	if (v->flags & VM_MAP)
-		seq_puts(m, " vmap");
+		seq_printf(m, " vmap");
 
 	if (v->flags & VM_USERMAP)
-		seq_puts(m, " user");
+		seq_printf(m, " user");
 
 	if (v->flags & VM_VPAGES)
-		seq_puts(m, " vpages");
+		seq_printf(m, " vpages");
 
 	if (v->flags & VM_LOWMEM)
 		seq_printf(m, " lowmem");
